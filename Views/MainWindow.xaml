@@ -1,18 +1,27 @@
-﻿<Window
+﻿<!-- メインウィンドウ -->
+<Window
     x:Class="TestActualSize.Views.MainWindow"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:behaviors="http://schemas.microsoft.com/xaml/behaviors"
     xmlns:l="http://schemas.livet-mvvm.net/2011/wpf"
+    xmlns:m="clr-namespace:TestActualSize.Models"
     xmlns:v="clr-namespace:TestActualSize.Views"
     xmlns:vm="clr-namespace:TestActualSize.ViewModels"
-    Title="MainWindow"
-    Width="525"
-    Height="350">
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    Title="{Binding Title}"
+    Width="{Binding Width, Mode=TwoWay}"
+    MinWidth="220"
+    Height="{Binding Height, Mode=TwoWay}"
+    MinHeight="220" >
+    <!-- ActualWidth="{Binding ActualWidth, Mode=OneWayToSource}" -->
 
     <Window.DataContext>
         <vm:MainWindowViewModel />
     </Window.DataContext>
+
+    <behaviors:Interaction.Behaviors>
+        <m:WindowBindingSupportBehavior ActualWidth="{Binding ActualWidth}" IsActive="{Binding IsActive}" />
+    </behaviors:Interaction.Behaviors>
 
     <behaviors:Interaction.Triggers>
         <!--  When ContentRendered event raised, Initialize method of ViewModel would be called.  -->
@@ -27,7 +36,38 @@
 
         <!--  If you make user choose 'OK or Cancel' closing Window, then please use Window Close cancel Behavior.  -->
 
+        <behaviors:EventTrigger EventName="SizeChanged">
+            <l:WindowSetStateToSourceAction Source="{Binding ActualHeight, Mode=TwoWay}" Property="ActualHeight" />
+        </behaviors:EventTrigger>
+
     </behaviors:Interaction.Triggers>
 
-    <Grid />
+    <StackPanel>
+        <StackPanel Orientation="Horizontal" >
+            <Label Content="タイトル：" Width="100" HorizontalContentAlignment="Right" />
+            <TextBox Text="{Binding Title, UpdateSourceTrigger=PropertyChanged}" Width="100" VerticalAlignment="Center" />
+        </StackPanel>
+        <StackPanel Orientation="Horizontal" >
+            <Label Content="Width：" Width="100" HorizontalContentAlignment="Right" />
+            <TextBox Text="{Binding Width, UpdateSourceTrigger=PropertyChanged}" Width="100" VerticalAlignment="Center" />
+        </StackPanel>
+        <StackPanel Orientation="Horizontal" >
+            <Label Content="ActualWidth：" Width="100" HorizontalContentAlignment="Right" />
+            <Label Content="{Binding ActualWidth}" />
+        </StackPanel>
+        <StackPanel Orientation="Horizontal" >
+            <Label Content="Height：" Width="100" HorizontalContentAlignment="Right" />
+            <TextBox Text="{Binding Height, UpdateSourceTrigger=PropertyChanged}" Width="100" VerticalAlignment="Center" />
+        </StackPanel>
+        <StackPanel Orientation="Horizontal" >
+            <Label Content="ActualHeight：" Width="100" HorizontalContentAlignment="Right" />
+            <Label Content="{Binding ActualHeight}" />
+        </StackPanel>
+        <StackPanel Orientation="Horizontal" >
+            <Label Content="アクティブ：" Width="100" HorizontalContentAlignment="Right" />
+            <CheckBox IsChecked="{Binding IsActive}" IsEnabled="False" VerticalAlignment="Center" />
+        </StackPanel>
+        <Button Content="5 秒後にアクティブ" Width="100" HorizontalAlignment="Left" Margin="100,0,0,0" Command="{Binding ButtonActivateClickedCommand}" />
+    </StackPanel>
+    
 </Window>
